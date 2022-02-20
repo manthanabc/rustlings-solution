@@ -26,7 +26,6 @@ enum ParsePersonError {
     ParseInt(ParseIntError),
 }
 
-// I AM NOT DONE
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -41,6 +40,41 @@ enum ParsePersonError {
 impl FromStr for Person {
     type Err = ParsePersonError;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        /*
+        let mut split = s.split(",");
+        if s.is_empty() {return Err(Self::Err::Empty);}
+        if s.split(",").count() != 2 {return Err(Self::Err::BadLen);}
+        let name = split.next().unwrap();
+        if name.len() == 0 { return Err(Self::Err::NoName); }
+        let age = split.next().unwrap().parse::<usize>();
+        match age {
+            Ok(x) => {return Ok(Person {name: name.to_string(), age:x})},
+            Err(e) =>{return Err(Self::Err::ParseInt(e));}
+        }
+        */
+        if s.is_empty() { return Err(Self::Err::Empty); }
+        let mut split = s.split(",");
+        let mut name = String::new();
+        if let Some(x) = split.next() { 
+            if x.len() > 0 {
+                name = x.to_string();
+            } else {
+                return Err(Self::Err::NoName);
+            }
+        }
+        let mut age = 0;
+        if let Some(x) = split.next() {
+            match x.parse::<usize>() {
+                Ok(x) => { age = x },
+                Err(e) => { return Err(Self::Err::ParseInt(e))}
+            }
+        } else {
+            return Err(Self::Err::BadLen);
+        }
+        if let Some(_) = split.next() {
+            return Err(Self::Err::BadLen)
+        }
+        Ok(Person{name,age})
     }
 }
 
